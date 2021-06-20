@@ -7,7 +7,9 @@ class NhentaiScraper:
     URL = "https://nhentai.net"
     
     def __init__(self, **kwargs): 
-        self.cache = kwargs.get("cache", False)
+        self.cache = kwargs.get("cache", True)
+        if self.cache: 
+            self._doujin_cache = {}
 
     async def _get_soup(self, code : int) -> BeautifulSoup: 
         async with aiohttp.ClientSession() as session: 
@@ -32,16 +34,24 @@ class NhentaiScraper:
             }
 
     async def get_doujin(self, code : int) -> Doujin: 
+        try: 
+            return self._doujin_cache[str(code)]
+        except:
+            print("Not found in cache / Cache disabled")
+
         soup = await self._get_soup(code)
         elements = await self._arrange_soup(soup, code)
-        
-        return Doujin(**elements)
+        doujin = Doujin(**elements)
 
-# Example of use 
+        if self.cache: 
+            self._doujin_cache[str(doujin.code)] = doujin 
+        return doujin
 
-# async def main(): 
+# Example of usage
+
+# async def main():
 #    scraper = NhentaiScraper()
-#    soup = await scraper.get_doujin(doujin_code)
-
+#    doujin = await scraper.get_doujin(4203)
+    
 # asyncio.get_event_loop().run_until_complete(main())
 
