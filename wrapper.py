@@ -21,7 +21,6 @@ class NhentaiScraper:
         name, _ = soup.title.string.split(" »")
         content = [img["src"] for img in soup.find_all("img") if img["src"][-4:] in [".png", ".jpeg", ".jpg"]]
         content_cover, content_pages, content_recommended = content[0], content[1:-5], content[-5:]
-        content_pages = [page_url[:page_url.rindex("t")] + page_url[page_url.rindex("."):] for page_url in content_pages]
         info = soup.find("div", {"id" : "content"}).find("div").find("div", {"id" : "info-block"}).find("div")
         pages = info.find("section").find_all("div")[-2].find("span").text
 
