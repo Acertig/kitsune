@@ -1,2 +1,2 @@
-A mix of both scrapper and router. It mantains the functionality of the scrapper but remains much more complex and superior functionality-wise to it's predecessor. 
+A full-fledged "wrapper" which uses a scrapper to replicate functionality the official API used to have. It will be in client format and will include functions such as: downloading, sorting, searching, filtering and retrieving doujins from the website. 
 This will be the one I work on the most since the scrapper is a more grab-and-use tool which doesn't require any further knowledge. Enjoy.
