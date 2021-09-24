@@ -8,7 +8,7 @@ Current capabilities:
 
 To be done: 
  
-- Some refactoring: names, structure, everything. 
+- Some refactoring: names, structure, everything
 - Comment retrieving
 - Downloading
 - Further search filtering options
