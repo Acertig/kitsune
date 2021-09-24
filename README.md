@@ -11,5 +11,5 @@ To be done:
 - Some refactoring: names, structure, everything
 - Comment retrieving
 - Downloading
-- Further search filtering options
+- Further searching filtering options
 - Faster requests
