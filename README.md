@@ -9,7 +9,7 @@ Current capabilities:
 To be done: 
  
 - Some refactoring: names, structure, everything
-- Comment retrieving
+- Comment and user retrieving
 - Downloading
 - Further searching filtering options
 - Faster requests
