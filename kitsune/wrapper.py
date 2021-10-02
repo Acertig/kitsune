@@ -1,47 +1,59 @@
-from asyncio.coroutines import coroutine
-from typing import Awaitable, Optional, Type, List, Callable
-from doujin import Doujinshi, Shelf
-from http_handler import HTTPHandler
-from query import Filtering, Query, Popularity
-from time import time
+from typing import Awaitable, Optional, Type, List, Union
 import asyncio
+import aiohttp
+
+from doujin import Comment, Doujinshi, Shelf, Gallery, User
+from http_handler import HTTPHandler
+from routes import Category, SearchRoute, APIRoute, Popularity
 
 __all__ = ("Kitsune",)
-
-class CacheError(Exception): 
-    pass
 
 class Kitsune: 
 
     slots = ("loop", "client", "options", "cache",)
-
-    def __new__(cls, *args, **kwargs): 
-        for value in globals().values():
-            if isinstance(value, cls): 
-                raise CacheError("The cache won't work properly if there are 2 instances of the wrapper or its subclass.")
-        return super().__new__(cls)
         
-    def __init__(self, loop: asyncio.AbstractEventLoop = asyncio.get_event_loop(), custom_client: Optional[Type[HTTPHandler]] = None):
+    def __init__(self, loop: asyncio.AbstractEventLoop = asyncio.get_event_loop(), subcls_handler: Optional[Type[HTTPHandler]] = None):
         self.loop = loop 
-        self.http = custom_client or HTTPHandler(self.loop)
+        self.http = subcls_handler or HTTPHandler(self.loop)
         self.cache = {}
 
-    async def _distribute(self, async_fn: Callable[[int], Doujinshi], *args) -> List[Awaitable]: 
-        return await asyncio.gather(*(async_fn(arg) for arg in args))
+    async def __aenter__(self):
+        self.http.session = aiohttp.ClientSession(loop = self.loop, headers = self.http.headers)
+        return self
 
-    async def get_doujinshi(self, code: int) -> Doujinshi: 
+    async def __aexit__(self, *args): 
+        await self.http.session.__aexit__(*args)
+
+    async def _distribute(self, codes: List[int]) -> List[Awaitable]: 
+        return await asyncio.gather(*(self.get_doujinshi(code) for code in codes))
+
+    async def fetch_doujinshi(self, code: int) -> Doujinshi: 
         if doujin := self.cache.get(str(code)):
             return doujin
 
-        data = await self.http.fetch_doujin_data(312781)
+        route = APIRoute(code)
+
+        data = await self.http.fetch_doujin_data(route)
         doujin = Doujinshi(data)
         self.cache[doujin.id] = doujin
        
         return doujin
 
-    async def search(self, query: str, pages: int, popularity: Popularity, filtering: Optional[Filtering] = None) -> Shelf: 
-        query = Query(query, pages, popularity, filtering)
+    async def fetch_gallery(self, shelf: Shelf, num: int) -> Gallery: 
+        data = await self.http.fetch_search_data(shelf.route, num)
+        doujins = await self._distribute(data)
 
-        data = await self.http.fetch_search_data(query)
+        return Gallery(doujins, num, shelf.galleries)
 
-        return Shelf(data, query)
+    async def fetch_user(self, id: int) -> User: 
+        ...
+
+    async def fetch_comment(self, target: Union[Doujinshi, User]) -> Comment: 
+        ...
+
+    async def search(self, query: str, popularity: Popularity, category: Optional[Category] = None) -> Union[Shelf, List[List[Doujinshi]]]: 
+        route = SearchRoute(query.replace(" ", "+"), popularity, category)
+
+        limit = await self.http.fetch_paginator_limit(route)
+
+        return Shelf(limit, route)
