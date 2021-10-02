@@ -12,4 +12,5 @@ To be done:
 - Comment and user retrieving
 - Downloading
 - Further searching filtering options
+- Handling ratelimits
 - Faster requests
