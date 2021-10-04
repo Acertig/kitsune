@@ -14,5 +14,4 @@ To be done:
 - Comment and user retrieving
 - Downloading
 - Further searching filtering options
-- Handling ratelimits
-- Faster requests
+- Handling ratelimits for faster requests: when testing, gallery retrieving sits at 9, this number could be reduced to 6, so that's what I'm aiming for at the moment. 
