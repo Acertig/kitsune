@@ -15,3 +15,5 @@ To be done:
 - Comment and user retrieving
 - Downloading
 - Further searching filtering options
+
+Special thanks to hentai-chan for sharing the API endpoints. They were necessary for this async version of the wrapper to work.
