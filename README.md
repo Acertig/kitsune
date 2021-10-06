@@ -1,4 +1,4 @@
-# Kitsune | A nhentai.net API wrapper and scraper
+# Kitsune | An asynchronous nhentai.net API wrapper and scraper
 Only contributions I allow will be accepted. This will be worked on only in my free time. 
 
 NOTE: Kitsune is the main form and the one for you if you want a broad range of capabilities. Otherwise, use the scrapper. 
