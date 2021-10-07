@@ -8,12 +8,12 @@ Current capabilities:
 - Doujin retrieving from nhentai API
 - Searching and filtering with webscraping
 - Ratelimiting and fast requests / 25 doujins per 6 seconds
+- Easy to use
 
 To be done: 
- 
-- Some refactoring: names, structure, everything
-- Comment and user retrieving
-- Downloading
-- Further searching filtering options
+
+- Efficient downloading
+- Extra polishing
+- Licensing and how to use guide
 
 Special thanks to hentai-chan for sharing the API endpoints. They were necessary for this async version of the wrapper to work.
