@@ -1,26 +1,29 @@
+from types import prepare_class
 from typing import Dict, Any, List
 from dataclasses import dataclass
-
-from routes import SearchRoute
-
-__all__ = ("Tag", "Doujinshi", "Shelf",)
 
 @dataclass(frozen = True)
 class User: 
 
     id: int
-    name: str
-    about: str
-    favorite_tags: str
-    recent_favorites: List[int]
+    username: str
+    slug: str
+    avatar_url: str
+    is_superuser: bool
+    is_staff: bool
 
 @dataclass(frozen = True)
 class Comment:
     
-    doujin_id: int
     id: int
-    content: str
-    user: User
+    gallery_id: int
+    poster: User
+    _post_date: int
+    body: str
+
+    @property
+    def post_date(self):
+        return self._post_date
 
 @dataclass(frozen = True)
 class Tag: 
@@ -48,7 +51,7 @@ class Cover(Page):
     def url(self) -> str:  
         return f"https://t.nhentai.net/galleries/{self.media_id}/cover.jpg"
 
-class Doujinshi: 
+class Gallery: 
 
     def __init__(self, data: Dict[str, Any]):
         self.data = data
@@ -82,35 +85,29 @@ class Doujinshi:
     def num_pages(self) -> int: 
         return self.data["num_pages"]
 
+    @property
+    def payload(self) -> Dict[str, Any]: 
+        return self.data
+
     def get_page(self, page: int) -> Page: 
         return self.pages[page]
 
     def download(self, directory: str) -> bool: 
         ...
 
-class Gallery: 
+class HomePage: 
 
-    __slots__ = ("doujins", "gallery_num", "galleries",)
+    __slots__ = ("popular_now", "new_uploads",)
 
-    def __init__(self, doujins: List[Doujinshi], gallery_num: int, galleries: int): 
-        self.doujins = doujins
-        self.gallery_num = gallery_num
-        self.galleries = galleries
-    
-    def __iter__(self): 
-        self._counter = 0
-        return self
-    
-    def __next__(self): 
-        if self._counter < len(self.ids): 
-            self._counter += 1
-            return self.ids[self._counter - 1]
-        raise StopIteration
+    def __init__(self, popular_now: List[Gallery], new_uploads: List[Gallery]): 
+        self.popular_now = popular_now
+        self.new_uploads = new_uploads
 
 class Shelf: 
 
-    __slots__ = ("galleries", "route")
-    
-    def __init__(self, galleries: int, route: SearchRoute): 
+    __slots__ = ("galleries", "num_pages", "per_page",)
+
+    def __init__(self, galleries: List[Gallery], num_pages: int, per_page: int): 
         self.galleries = galleries
-        self.route = route
+        self.num_pages = num_pages
+        self.per_page = per_page
