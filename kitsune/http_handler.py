@@ -1,72 +1,66 @@
-from asyncio.locks import Semaphore
-from typing import Optional, Type, List, Dict, Any, Union
-from bs4 import BeautifulSoup
-from http import HTTPStatus
+from typing import Optional, Type, List, Dict, Any, Union, Tuple
 import re
 import asyncio
 import aiohttp
 
-from constants import DEFAULT_HEADERS, BASE
-from routes import APIRoute, SearchRoute
+from constants import DEFAULT_HEADERS, TBR
+from routes import Popularity, Route
 
 __all__ = ("HTTPHandler",)
 
-class MediaNotFound(Exception): 
-    pass
-
 class HTTPHandler:
 
-    __slots__ = ("loop", "session", "headers", "semaphore",)
+    __slots__ = ("loop", "session", "headers", "lock",)
    
     def __init__(self, loop: asyncio.AbstractEventLoop, headers: Optional[Dict[str, str]] = DEFAULT_HEADERS, session: Optional[Type[aiohttp.ClientSession]] = None):                             
         self.loop = loop                                                                                                                                                                                                                 
         self.headers = headers
-        self.semaphore = Semaphore(3)
+        self.lock = asyncio.Lock()
 
         self.session = session or None
 
-    def _check_limit(self, soup: BeautifulSoup) -> int: 
-        limit = soup.select("body > div[id=content] > section.pagination > a.last")[0]["href"]
-        return int(re.search(r"\d+", limit).group(0))
+    def ratelimit(async_func):
+        async def wrapper(*args): 
+            self = args[0]
+            await self.lock.acquire()
+            self.loop.call_later(TBR, self.lock.release)
+            return await async_func(*args)
+        return wrapper 
 
-    def _check_results(self, soup: BeautifulSoup) -> bool: 
-        if not soup.select("body > div[id=content] > div.container > h2"): 
-            return True
-        return False
-
-    def _scrape_codes(self, soup: BeautifulSoup) -> List[int]:  
-        selection = soup.select("body > div[id=content] > div.container")[0].find_all("div", {"class": "gallery"})
-        return [int(selected.find("a")["href"][3:-1]) for selected in selection]
-
-    async def get(self, url: str) -> Union[Dict[str, Any], str]: 
-        async with self.semaphore: 
-            async with self.session.get(url) as response: 
-                if response.status == HTTPStatus.OK:     
-                    if response.headers["Content-Type"] == "application/json": 
-                        return await response.json()
-                    return await response.text()
-                elif response.status == HTTPStatus.NOT_FOUND:  
-                    raise MediaNotFound(f"Media could not be found at {url}")
-        return await self.get(url) # Temporary solution
+    @ratelimit
+    async def get(self, url: str) -> Union[Dict[str, Any], str, None]: 
+        async with self.session.get(url) as response: 
+            if 200 <= response.status < 300:    
+                if response.headers["Content-Type"] == "application/json": 
+                    return await response.json()
+                return await response.text()
+            elif response.status == 429: 
+                return await self.get(url) 
+            else: 
+                return None
                     
-    async def fetch_doujin_data(self, route: APIRoute) -> Dict[str, Any]:  
-        return await self.get(route.url)
+    async def fetch_gallery_data(self, __id: int) -> Dict[str, Any]:  
+        route = Route("/api/gallery/{}", __id)
+        payload = await self.get(route.url)
 
-    async def fetch_search_data(self, route: SearchRoute, num: int) -> str:
-        data = await self.get(route.get_url(num))
-        soup = BeautifulSoup(data, features = "html5lib")
+        return payload
 
-        return self._scrape_codes(soup)
+    async def fetch_homepage_data(self) -> List[List[int]]: 
+        route = Route("")
+        html = await self.get(route.url)
 
-    async def fetch_paginator_limit(self, route: SearchRoute) -> int: 
-        data = await self.get(route.get_url(1))
-        soup = BeautifulSoup(data, features = "html5lib")
-        
-        if self._check_results(soup): 
-            return self._check_limit(soup)
+        ids = re.findall(r"/g/(\d+)/", html)
 
-    async def fetch_comments_data(self):
-        ...
+        return ids
 
-    async def fetch_bytes_data(self, url: str): 
-        ...
+    async def fetch_search_data(self, query: str, page: int, popularity: Popularity) -> Dict[str, Any]:
+        route = Route("/api/galleries/search?query={}&page={}&sort={}", query, page, popularity.value)     
+        payload = await self.get(route.url)
+
+        return payload
+
+    async def fetch_comment_data(self, __id: int) -> Dict[str, Any]:
+        route = Route("/api/gallery/{}/comments", __id)
+        payload = await self.get(route.url)
+
+        return payload
