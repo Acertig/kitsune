@@ -1,16 +1,17 @@
 from typing import Awaitable, Optional, Type, List, Union
+from random import randint
 import asyncio
 import aiohttp
 
-from doujin import Comment, Doujinshi, Shelf, Gallery, User
+from doujin import Comment, Shelf, Gallery, User, HomePage
 from http_handler import HTTPHandler
-from routes import Category, SearchRoute, APIRoute, Popularity
+from routes import Popularity
 
 __all__ = ("Kitsune",)
 
 class Kitsune: 
 
-    slots = ("loop", "client", "options", "cache",)
+    slots = ("loop", "client", "cache",)
         
     def __init__(self, loop: asyncio.AbstractEventLoop = asyncio.get_event_loop(), subcls_handler: Optional[Type[HTTPHandler]] = None):
         self.loop = loop 
@@ -25,35 +26,55 @@ class Kitsune:
         await self.http.session.__aexit__(*args)
 
     async def _distribute(self, codes: List[int]) -> List[Awaitable]: 
-        return await asyncio.gather(*(self.get_doujinshi(code) for code in codes))
+        return await asyncio.gather(*(self.fetch_gallery(code) for code in codes))
 
-    async def fetch_doujinshi(self, code: int) -> Doujinshi: 
-        if doujin := self.cache.get(str(code)):
-            return doujin
+    async def fetch_gallery(self, code: int) -> Gallery: 
+        if gallery := self.cache.get(str(code)):
+            return gallery
 
-        route = APIRoute(code)
-
-        data = await self.http.fetch_doujin_data(route)
-        doujin = Doujinshi(data)
-        self.cache[doujin.id] = doujin
+        payload = await self.http.fetch_gallery_data(code)
+        gallery = Gallery(payload)
+        self.cache[gallery.id] = gallery
        
-        return doujin
+        return gallery
 
-    async def fetch_gallery(self, shelf: Shelf, num: int) -> Gallery: 
-        data = await self.http.fetch_search_data(shelf.route, num)
-        doujins = await self._distribute(data)
+    async def fetch_random(self) -> Gallery: 
+        return await self.fetch_gallery(randint(1, 335000))
 
-        return Gallery(doujins, num, shelf.galleries)
+    async def fetch_homepage(self) -> HomePage: 
+        ids = await self.http.fetch_homepage_data()
+        galleries = await self._distribute(ids)
 
-    async def fetch_user(self, id: int) -> User: 
-        ...
+        homepage = HomePage(galleries[0:5], galleries[5:])
 
-    async def fetch_comment(self, target: Union[Doujinshi, User]) -> Comment: 
-        ...
+        return homepage
 
-    async def search(self, query: str, popularity: Popularity, category: Optional[Category] = None) -> Union[Shelf, List[List[Doujinshi]]]: 
-        route = SearchRoute(query.replace(" ", "+"), popularity, category)
+    async def fetch_comments(self, gallery: Union[int, Gallery]) -> Comment: 
+        try: 
+            __id = gallery.id
+        except AttributeError: 
+            __id = gallery
 
-        limit = await self.http.fetch_paginator_limit(route)
+        payload = await self.http.fetch_comment_data(__id)
 
-        return Shelf(limit, route)
+        comments = []
+
+        for data in payload: 
+            data["poster"] = User(*(data.get("poster").values()))           
+            comment = Comment(*data.values())
+            comments.append(comment)
+
+        return comments
+
+    async def search(self, query: Union[str, List[str]], page: Union[int, List[int]], popularity: Popularity = Popularity.RECENT) -> Shelf: 
+        if isinstance(query, list): 
+            query = "+".join(query)
+        
+        payload = await self.http.fetch_search_data(query, page, popularity)
+
+        payload["result"] = [Gallery(data) for data in payload["result"]]
+        
+        shelf = Shelf(*(payload.values()))
+
+        return shelf
+
