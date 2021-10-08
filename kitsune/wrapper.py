@@ -11,7 +11,7 @@ __all__ = ("Kitsune",)
 
 class Kitsune: 
 
-    slots = ("loop", "client", "cache",)
+    slots = ("loop", "http", "cache",)
         
     def __init__(self, loop: asyncio.AbstractEventLoop = asyncio.get_event_loop(), subcls_handler: Optional[Type[HTTPHandler]] = None):
         self.loop = loop 
