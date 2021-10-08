@@ -1,4 +1,3 @@
-from types import prepare_class
 from typing import Dict, Any, List
 from dataclasses import dataclass
 
