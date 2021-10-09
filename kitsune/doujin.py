@@ -81,8 +81,16 @@ class Gallery:
         return self.data["title"]
 
     @property
+    def upload_date(self): 
+        return self.data["upload_date"]
+     
+    @property
     def num_pages(self) -> int: 
         return self.data["num_pages"]
+    
+    @property
+    def num_favorites(self) -> int: 
+        return self.data["num_favorites"]
 
     @property
     def payload(self) -> Dict[str, Any]: 
