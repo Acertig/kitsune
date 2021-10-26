@@ -1,5 +1,4 @@
 from enum import Enum
-from typing import Any
 
 __all__ = ("Popularity",)
 
@@ -15,12 +14,6 @@ class Route:
     
     BASE = "http://nhentai.net"
 
-    def __init__(self, path: str, *args): 
+    def __init__(self, path: str = ""): 
         self.path = path
-        self.url = self.BASE + self.path
-        
-        for arg in args: 
-            self.url = self.url.replace("{}", str(arg), 1)
-
-    def insert_temporal_param(self, param: Any): 
-        return self.url.replace("{}", param)
+        self.url = self.BASE + path if not "https" in path else path
