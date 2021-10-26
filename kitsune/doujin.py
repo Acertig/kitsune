@@ -1,5 +1,6 @@
 from typing import Dict, Any, List
 from dataclasses import dataclass
+from datetime import datetime
 
 @dataclass(frozen = True)
 class User: 
@@ -21,8 +22,8 @@ class Comment:
     body: str
 
     @property
-    def post_date(self):
-        return self._post_date
+    def post_date(self) -> datetime:
+        return datetime.fromtimestamp(self._post_date)
 
 @dataclass(frozen = True)
 class Tag: 
@@ -39,23 +40,29 @@ class Page:
     media_id: int
     page_num: int
     pages: int
+    extension: str
     
     @property
     def url(self) -> str: 
-        return f"https://i.nhentai.net/galleries/{self.media_id}/{self.page_num}.jpg"
+        return f"https://i.nhentai.net/galleries/{self.media_id}/{self.page_num}.{self.extension}"
 
 class Cover(Page): 
 
     @property
     def url(self) -> str:  
-        return f"https://t.nhentai.net/galleries/{self.media_id}/cover.jpg"
+        return f"https://t.nhentai.net/galleries/{self.media_id}/cover.{self.extension}"
+
+class PartialGallery: 
+    ...
 
 class Gallery: 
 
+    EXTENSIONS = {"j": "jpg", "p": "png"}
+
     def __init__(self, data: Dict[str, Any]):
         self.data = data
-        self.cover = Cover(self.media_id, 0, self.num_pages)
-        self.pages = [Page(self.media_id, i + 1, self.num_pages) for i in range(self.num_pages)]
+        self.cover = Cover(self.media_id, 0, self.num_pages, self.cover_extension)
+        self.pages = [Page(self.media_id, i + 1, self.num_pages, self.EXTENSIONS[self.data["images"]["pages"][i]["t"]]) for i in range(self.num_pages)]
         self.tags = [Tag(*tag.values()) for tag in self.data["tags"]]
 
     def __iter__(self): 
@@ -81,26 +88,19 @@ class Gallery:
         return self.data["title"]
 
     @property
-    def upload_date(self): 
-        return self.data["upload_date"]
-     
-    @property
     def num_pages(self) -> int: 
         return self.data["num_pages"]
-    
+
     @property
-    def num_favorites(self) -> int: 
-        return self.data["num_favorites"]
+    def cover_extension(self) -> str: 
+        return self.EXTENSIONS[self.data["images"]["cover"]["t"]]
 
     @property
     def payload(self) -> Dict[str, Any]: 
         return self.data
 
     def get_page(self, page: int) -> Page: 
-        return self.pages[page]
-
-    def download(self, directory: str) -> bool: 
-        ...
+        return self.pages[page + 1]
 
 class HomePage: 
 
