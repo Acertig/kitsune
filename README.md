@@ -5,7 +5,7 @@ Current capabilities:
 
 - Doujin retrieving from nhentai API
 - Searching and filtering with webscraping
-- Ratelimiting and fast requests / 25 doujins per 6 seconds individually requesting each
+- Ratelimiting and fast requests / 25 requests per 6 seconds individually requesting each
 - Easy to use
 - Efficient downloading
 
