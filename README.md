@@ -1,3 +1,4 @@
+[![forthebadge made-with-python](http://ForTheBadge.com/images/badges/made-with-python.svg)](https://www.python.org/)
 # Kitsune | An asynchronous nhentai.net API wrapper and scraper
 Only contributions I allow will be accepted. This will be worked on only in my free time. 
 
