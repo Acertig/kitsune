@@ -1,4 +1,4 @@
-[![Generic badge](https://img.shields.io/badge/<Python>-<3.9+>-<blue>.svg)](https://shields.io/)
+[![Generic badge](https://img.shields.io/badge/Python-3.9+-<blue>.svg)](https://shields.io/)
 
 # Kitsune | An asynchronous nhentai.net API wrapper and scraper
 Only contributions I allow will be accepted. This will be worked on only in my free time. 
