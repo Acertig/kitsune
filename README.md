@@ -2,7 +2,7 @@
 # Kitsune: An asynchronous nhentai.net API wrapper and scraper
 Only contributions I allow will be accepted. This will be worked on only in my free time. 
 
-Current capabilities: 
+# Current capabilities: 
 
 - Doujin retrieving from nhentai API
 - Searching and filtering with webscraping
@@ -10,12 +10,12 @@ Current capabilities:
 - Easy to use
 - Efficient downloading
 
-Pre-release: 
+# Pre-release: 
 
 - Extra polishing, some extra refactoring and last touches.
 - Licensing, uploading the package and guide on how to use.
 
-Post-release: 
+# Post-release: 
 - Even more refactoring. 
 - Simple GUI to download media using the wrapper.
 
