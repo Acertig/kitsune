@@ -6,7 +6,7 @@ Only contributions I allow will be accepted. This will be worked on only in my f
 
 - Doujin retrieving from nhentai API
 - Searching and filtering with webscraping
-- Ratelimiting and fast requests / 25 requests per 6 seconds individually requesting each
+- Ratelimit handling
 - Downloading done via threads
 
 ### Pre-release: 
