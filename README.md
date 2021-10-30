@@ -1,3 +1,5 @@
+[![Generic badge](https://img.shields.io/badge/<SUBJECT>-<STATUS>-<COLOR>.svg)](https://shields.io/)
+
 # Kitsune | An asynchronous nhentai.net API wrapper and scraper
 Only contributions I allow will be accepted. This will be worked on only in my free time. 
 
