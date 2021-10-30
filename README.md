@@ -9,9 +9,13 @@ Current capabilities:
 - Easy to use
 - Efficient downloading
 
-To be done: 
+Pre-release: 
 
 - Extra polishing, some extra refactoring and last touches.
-- Licensing and how to use guide
+- Licensing, uploading the package and guide on how to use.
+
+Post-release: 
+- Even more refactoring. 
+- Simple GUI to download media using the wrapper.
 
 Special thanks to hentai-chan for sharing the API endpoints. They were necessary for this async version of the wrapper to work.
