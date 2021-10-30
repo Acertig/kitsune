@@ -4,7 +4,7 @@ Only contributions I allow will be accepted. This will be worked on only in my f
 
 ### Current capabilities: 
 
-- Doujin retrieving from nhentai API
+- nhentai.net API endpoints data requesting 
 - Searching and filtering with webscraping
 - Ratelimit handling
 - Downloading done via threads
