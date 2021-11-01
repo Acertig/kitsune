@@ -21,6 +21,10 @@ Only contributions I allow will be accepted. This will be worked on only in my f
 
 ## How-to-use Guide
 
+The main way to create the wrapper instance is via an async context manager which takes care of creating and closing the HTTP session internally.
 
+```py
+async with Kitsune() as client: 
+```
 
 Special thanks to hentai-chan for sharing the API endpoints. They were necessary for this async version of the wrapper to work.
