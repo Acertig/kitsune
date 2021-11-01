@@ -71,9 +71,19 @@ async def main():
         
         gallery = await client.fetch_gallery(312781) # Fetching a gallery/doujinshi
         
+        galleries = await client.fetch_galleries([312781, 31286, 9294])
+        
+        related = await client.fetch_related(312781)
+        
+        random_gallery = await client.fetch_random()
+        
+        homepage = await client.fetch_homepage()
+        
         shelf = await client.search([Tag["futanari"], Tag["kitsune"], pages = [1, 10], popularity = Popularity.ALL_TIME) # Searching based on query or filter
         
         comments = await client.fetch_comments(gallery.id) # Fetching the comments from a doujin
+        
+        
    
 ```
 More examples and explanations can be found on the documentation. 
