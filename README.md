@@ -82,8 +82,6 @@ async def main():
         shelf = await client.search([Tag["futanari"], Tag["kitsune"], pages = [1, 10], popularity = Popularity.ALL_TIME) # Searching based on query or filter
         
         comments = await client.fetch_comments(gallery.id) # Fetching the comments from a doujin
-        
-        
    
 ```
 More examples and explanations can be found on the documentation. 
