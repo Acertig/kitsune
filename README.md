@@ -65,5 +65,6 @@ async def main():
         comments = await client.fetch_comments(gallery.id) # Fetching the comments from a doujin
    
 ```
+More examples and explanations can be found on the documentation. 
 
 Special thanks to hentai-chan for sharing the API endpoints. They were necessary for this async version of the wrapper to work.
