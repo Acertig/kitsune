@@ -1,7 +1,9 @@
-from typing import Optional, List, Union
+from collections.abc import Sequence
+from typing import Optional, Union, Dict, List
 from contextlib import asynccontextmanager
 from concurrent.futures import ThreadPoolExecutor
 from random import randint
+from typing_extensions import get_args
 from PIL import Image, UnidentifiedImageError
 
 import asyncio
@@ -11,8 +13,8 @@ import os
 
 from kitsune.constants import DEFAULT_HEADERS
 from kitsune.doujin import Comment, Shelf, Gallery, User, HomePage
-from kitsune.http_handler import HTTPHandler
-from kitsune.routes import Popularity
+from kitsune.http import HTTPHandler
+from kitsune.query import Popularity
 
 __all__ = ("Kitsune",)
 
@@ -46,7 +48,7 @@ class Kitsune:
         self.loop = loop or asyncio.get_running_loop()
         self.http: HTTPHandler
 
-        self.cache = {}
+        self.cache: Dict[int, Gallery] = {}
 
     async def __aenter__(self):
         session = aiohttp.ClientSession(loop = self.loop, headers = DEFAULT_HEADERS)
@@ -54,19 +56,19 @@ class Kitsune:
         return self
 
     async def __aexit__(self, *args): 
-        await self.http.session.close()
+        await self.http.session.close() 
 
     def save_bytes_to_file(self, bytes_l: List[bytes], path: str, gallery: Gallery): 
         for i, __bytes in enumerate(bytes_l): 
             try: 
                 img = Image.open(io.BytesIO(__bytes))
-                img.save(f"{path}/{i if i != 0 else 'cover'}.{gallery.pages[i-1].extension if i != 0 else gallery.cover_extension}")
+                img.save(f"{path}/{i if i != 0 else 'cover'}.{gallery.pages[i-1].extension if i != 0 else gallery.cover.extension}")
             except UnidentifiedImageError: 
-                print(f"Page {i} was corrupted.")
+                self.print(f"Page {i} from {gallery.title.pretty} couldn't be downloaded.")
 
     @classmethod
     @asynccontextmanager
-    async def from_session(cls, session: aiohttp.ClientSession):
+    async def from_session(cls, session: aiohttp.ClientSession, loop: asyncio.AbstractEventLoop = None):
         
         """
         Async context manager to instantiate the wrapper with a custom session. 
@@ -82,10 +84,10 @@ class Kitsune:
         Kitsune 
         """
 
-        loop = asyncio.get_running_loop()
-
+        loop = loop or asyncio.get_running_loop()
+        instance = cls(loop, session)
+        
         try: 
-            instance = cls(loop, session)
             yield instance
         except Exception as e: 
             await instance.__aexit__(type(e), e, e.__traceback__)
@@ -107,7 +109,7 @@ class Kitsune:
         Gallery
         """
 
-        if gallery := self.cache.get(str(__id)):
+        if gallery := self.cache.get(__id):
             return gallery
 
         payload = await self.http.fetch_gallery_data(__id)
@@ -116,14 +118,14 @@ class Kitsune:
        
         return gallery
 
-    async def fetch_galleries(self, ids: List[int]) -> List[Gallery]:
+    async def fetch_galleries(self, ids: Sequence[int]) -> List[Gallery]:
 
         """
         Async function. Multiple ids variant of Kitsune.fetch_gallery.
 
         Parameters 
         ----------
-        ids: List[int]
+        ids: Sequence[int]
             List of identifiers, multiple id variant of Kitsune.fetch_gallery. 
 
         Returns 
@@ -133,21 +135,16 @@ class Kitsune:
 
         return await asyncio.gather(*(self.fetch_gallery(__id) for __id in ids))
 
-    async def fetch_related(self, gallery = Union[int, Gallery]) -> List[Gallery]:
+    async def fetch_related(self, __id: int) -> List[Gallery]:
         
         """
         Async function. Relation variant of fetch_galleries. 
 
         Parameters 
         ----------
-        gallery: Gallery
-            Gallery from which to retrieve the related galleries.  
+        __id: int
+            Gallery id from which to retrieve the related galleries.  
         """
-
-        try: 
-            __id = gallery.id
-        except AttributeError: 
-            __id = gallery
 
         ids = await self.http.fetch_related_data(__id)
         galleries = await self.fetch_galleries(ids)
@@ -183,70 +180,20 @@ class Kitsune:
 
         return homepage
 
-    async def search(self, query: Union[str, List[str]], page: Optional[Union[int, List[int]]] = 1, popularity: Optional[Popularity] = Popularity.RECENT) -> Shelf:
-        
-        """
-        Async function. Fetches the data from the /api/galleries/ endpoint and wraps it into a Shelf instance. 
-
-        Parameters
-        ----------
-        query: Union[str, List[str]]
-            A string or a list of category:query if given. 
-        page: Optional[Union[int, List[int]]], defaults to 1. 
-            The paginator number, or a list of start and end of an inclusive range if given.
-        popularity: Optional[Popularity], defaults to Popularity.RECENT
-            Used to filter the popularity of the galleries.  
-
-        Returns
-        ----------
-        Shelf
-        """
-
-        if isinstance(query, list): 
-            query = "+".join(query)
-        
-        if isinstance(page, int): 
-            payload = await self.http.fetch_search_data(query, page, popularity)
-            payload["result"] = [Gallery(data) for data in payload["result"]]
-            
-            shelf = Shelf(*(payload.values()))
-
-            return shelf
-        
-        payload = await self.http.fetch_search_data(query, 1, popularity)
-        paginator_max = payload["num_pages"]
-        
-        pages = [end if end < paginator_max else paginator_max for end in page]
-
-        results = await asyncio.gather(*(self.http.fetch_search_data(query, page, popularity) for page in range(*pages)), return_exceptions = True)
-        payloads = [result for result in results if isinstance(result, dict)]
-
-        for payload in payloads: 
-            payload["result"] = [Gallery(data) for data in payload["result"]]
-
-        shelves = [Shelf(*(payload.values())) for payload in payloads]
-
-        return shelves
-
-    async def fetch_comments(self, gallery: Union[int, Gallery]) -> Comment: 
+    async def fetch_comments(self, __id: int) -> Comment: 
 
         """
         Async function. Fetches the data from the /api/gallery/{id}/comments endpoint and wraps it into a list of Comment instances.
 
         Parameters 
         ----------
-        gallery: Union[int, Gallery] 
-            The gallery whose comments' data is getting fetched. 
+        __id: int
+            Gallery id whose comments' data is getting fetched. 
         
         Returns
         ----------
         Comment
         """
-
-        try: 
-            __id = gallery.id
-        except AttributeError: 
-            __id = gallery
 
         payload = await self.http.fetch_comment_data(__id)
 
@@ -259,30 +206,59 @@ class Kitsune:
 
         return comments
 
-    async def download(self, container: Union[Gallery, List[Gallery], Shelf], path: str, directory: Optional[bool] = True): 
+    async def search(self, query: Union[str, Sequence[str]], pages: Optional[Sequence[int]] = [1, 2], popularity: Optional[Popularity] = Popularity.RECENT) -> Union[Shelf, List[Shelf]]:
+        
+        """
+        Async function. Fetches the data from the /api/galleries/ endpoint and wraps it into a Shelf instance. 
+
+        Parameters
+        ----------
+        query: Union[str, Sequence[str]]
+            A string or a list of category:query if given. 
+        page: Optional[Sequence[int]], defaults to [1, 2]. 
+            A sequence which represents the range of an inclusive start and exclusive end if given
+        popularity: Optional[Popularity], defaults to Popularity.RECENT
+            Used to filter the popularity of the galleries.  
+
+        Returns
+        ----------
+        Shelf
+        """
+
+        if isinstance(query, list): 
+            query = "+".join(query)
+        
+        limit = await self.http.fetch_paginator_limit(query, popularity)
+        pages = [end if end < limit else limit for end in pages]
+
+        results = await asyncio.gather(*(self.http.fetch_search_data(query, page, popularity) for page in range(*pages)))
+        payloads = [result for result in results if result["result"]]
+
+        for payload in payloads: 
+            payload["result"] = [Gallery(data) for data in payload["result"]]
+
+        shelves = [Shelf(*(payload.values())) for payload in payloads]
+
+        return shelves if len(shelves) != 1 else shelves[0]
+
+    async def download(self, container: Union[Gallery, Sequence[Gallery], Shelf], path: str, directory: Optional[bool] = True): 
         
         """
         Async function. Fetches the bytes from the containers' media, and downloads it via threads in the path given and creates a directory if specified. 
 
         Parameters
         ----------
-        container: Union[Gallery, List[Gallery], Shelf]
-            A Gallery, list of galleries or Shelf instance to retrieve the media data from. 
+        container: Union[Gallery, Sequence[Gallery], Shelf]
+            A Gallery, sequence of galleries or Shelf instance to retrieve the media data from. 
         path: str
             Path in which the downloaded media will be saved to.  
         directory: Optional[bool], defaults to True. 
             Creates a directory if set to True. Else it will save the media without creating a directory. 
         """
 
-        if isinstance(container, Shelf): 
-            galleries = [gallery for gallery in container.galleries]
-        else: 
-            if isinstance(container, list): 
-                galleries = [*container]
-            else: 
-                galleries = [container]
+        galleries = [*container]
         
-        bytes_l = [await self.http.fetch_media_bytes([gallery.cover, *gallery.pages]) for gallery in galleries]
+        bytes_l = [await self.http.fetch_media_bytes(list(map(lambda g: get_args.url, [gallery.cover, *gallery.pages]))) for gallery in galleries]
         media = list(zip(galleries, bytes_l))
 
         with ThreadPoolExecutor() as executor: 
@@ -292,8 +268,10 @@ class Kitsune:
                     try: 
                         os.mkdir(temp)
                     except FileExistsError: 
-                        print(f"Directory {temp} couldn't be created because it already exists.")
+                        pass
                 else: 
                     temp = path
-                    
+
                 executor.submit(self.save_bytes_to_file(bytes_l, temp, gallery))
+
+   
