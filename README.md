@@ -56,8 +56,7 @@ import aiohttp
 from kitsune import Kitsune, Tag, Artist
 
 async def main():
-    session = aiohttp.ClientSession()
-    async with Kitsune.from_session(session) as client: 
+    async with Kitsune(loop = your_loop) as client: # You can also pass your own loop, which will handle the ratelimits  
         
         gallery = await client.fetch_gallery(312781) # Fetching a gallery/doujinshi
         
