@@ -48,7 +48,9 @@ import aiohttp
 from kitsune import Kitsune
 
 async def main():
+
     session = aiohttp.ClientSession()
+    
     async with Kitsune.from_session(session) as client: 
         ...
    
