@@ -16,6 +16,5 @@ Only contributions I allow will be accepted. This will be worked on only in my f
 
 ### Post-release: 
 - Even more refactoring. 
-- Simple GUI to download media using the wrapper.
-
+- Tweaks and changes for the http handler.
 Special thanks to hentai-chan for sharing the API endpoints. They were necessary for this async version of the wrapper to work.
