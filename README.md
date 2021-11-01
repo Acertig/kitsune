@@ -21,14 +21,31 @@ Only contributions I allow will be accepted. This will be worked on only in my f
 
 ## How-to-use Guide
 
-The main way to create the wrapper instance is via an async context manager which takes care of creating and closing the HTTP session internally.
+The main way to instantiate the wrapper class is via an async context manager which takes care of creating and closing the HTTP session internally.
 
 ```py
 import asyncio
+
 from kitsune import Kitsune
 
 async def main():
   async with Kitsune() as client: 
+    ...
+
+asyncio.run(main())
+```
+
+You can also opt to pass your own HTTP session.
+
+```py
+import asyncio
+import aiohttp
+
+from kitsune import Kitsune
+
+async def main():
+  session = aiohttp.ClientSession()
+  async with Kitsune.from_session(session) as client: 
     ...
 
 asyncio.run(main())
