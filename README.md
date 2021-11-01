@@ -1,6 +1,5 @@
 [![forthebadge made-with-python](http://ForTheBadge.com/images/badges/made-with-python.svg)](https://www.python.org/)
 # Kitsune: An asynchronous nhentai.net API wrapper and scraper
-      ![image](https://user-images.githubusercontent.com/67067768/139630315-8822160e-67da-48cc-9043-cefd41f30bb8.png)
 
 Only contributions I allow will be accepted. This will be worked on only in my free time. 
 
@@ -19,5 +18,9 @@ Only contributions I allow will be accepted. This will be worked on only in my f
 ### Post-release: 
 - Even more refactoring. 
 - Tweaks and changes for the http handler.
+
+## How-to-use Guide
+
+
 
 Special thanks to hentai-chan for sharing the API endpoints. They were necessary for this async version of the wrapper to work.
