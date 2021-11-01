@@ -26,6 +26,13 @@ class Comment:
         return datetime.fromtimestamp(self._post_date)
 
 @dataclass(frozen = True)
+class Title: 
+
+    english: str
+    japanese: str
+    pretty: str
+
+@dataclass(frozen = True)
 class Tag: 
 
     id: int
@@ -52,69 +59,54 @@ class Cover(Page):
     def url(self) -> str:  
         return f"https://t.nhentai.net/galleries/{self.media_id}/cover.{self.extension}"
 
-class PartialGallery: 
-    ...
-
 class Gallery: 
 
-    EXTENSIONS = {"j": "jpg", "p": "png"}
+    EXTENSIONS = {"j": "jpg", "p": "png", "g": "gif"}
 
-    def __init__(self, data: Dict[str, Any]):
-        self.data = data
-        self.cover = Cover(self.media_id, 0, self.num_pages, self.cover_extension)
-        self.pages = [Page(self.media_id, i + 1, self.num_pages, self.EXTENSIONS[self.data["images"]["pages"][i]["t"]]) for i in range(self.num_pages)]
-        self.tags = [Tag(*tag.values()) for tag in self.data["tags"]]
+    def __init__(self, payload: Dict[str, Any]):
+        self.payload = payload
+
+        self.title = Title(*(self.payload["title"].values()))
+        self.cover = Cover(self.media_id, 0, self.num_pages, self.EXTENSIONS[self.payload["images"]["cover"]["t"]])
+        self.pages = [Page(self.media_id, i + 1, self.num_pages, self.EXTENSIONS[self.payload["images"]["pages"][i]["t"]]) for i in range(self.num_pages)]
+        self.tags = [Tag(*tag.values()) for tag in self.payload["tags"]]
 
     def __iter__(self): 
-        self._counter = 0
-        return self
+        return iter([self])
 
-    def __next__(self):
-        if self._counter < len(self.pages):
-            self._counter += 1
-            return self.pages[self._counter - 1]
-        raise StopIteration
+    def __str__(self): 
+        return f"[{self.id}] {self.title.pretty}"
+
+    def __repr__(self): 
+        return f"Gallery(id={self.id}, media_id={self.media_id}, title={self.title}, num_pages={self.num_pages}, cover={self.cover}, pages={self.pages}, tags={self.tags})"
 
     @property
     def id(self) -> int: 
-        return self.data["id"]
+        return self.payload["id"]
     
     @property
     def media_id(self) -> int: 
-        return self.data["media_id"]
-
-    @property
-    def title(self) -> Dict[str, str]: 
-        return self.data["title"]
+        return self.payload["media_id"]
 
     @property
     def num_pages(self) -> int: 
-        return self.data["num_pages"]
-
-    @property
-    def cover_extension(self) -> str: 
-        return self.EXTENSIONS[self.data["images"]["cover"]["t"]]
-
-    @property
-    def payload(self) -> Dict[str, Any]: 
-        return self.data
+        return self.payload["num_pages"]
 
     def get_page(self, page: int) -> Page: 
         return self.pages[page + 1]
 
+@dataclass(frozen = True)
 class HomePage: 
 
-    __slots__ = ("popular_now", "new_uploads",)
+    popular_now: List[Gallery]
+    new_uploads: List[Gallery]
 
-    def __init__(self, popular_now: List[Gallery], new_uploads: List[Gallery]): 
-        self.popular_now = popular_now
-        self.new_uploads = new_uploads
-
+@dataclass(frozen = True)
 class Shelf: 
 
-    __slots__ = ("galleries", "num_pages", "per_page",)
+    galleries: List[Gallery]
+    num_pages: int
+    per_page: int
 
-    def __init__(self, galleries: List[Gallery], num_pages: int, per_page: int): 
-        self.galleries = galleries
-        self.num_pages = num_pages
-        self.per_page = per_page
+    def __iter__(self): 
+        return iter(self.galleries)
