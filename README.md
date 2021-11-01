@@ -18,6 +18,7 @@ Only contributions I allow will be accepted. This will be worked on only in my f
 - Licensing, uploading the package and guide on how to use.
 
 ### Post-release: 
+- GIF downloading support.
 - Even more refactoring. 
 - Tweaks and changes for the http handler.
 
