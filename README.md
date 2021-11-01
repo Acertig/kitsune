@@ -5,6 +5,8 @@ An asynchronous nhentai.net API wrapper and scraper
 
 Only contributions I allow will be accepted. This will be worked on only in my free time. 
 
+As of now the wrapper has most of the functionality the API has to offer, except for the endpoint for filtering galleries by tag which I didn't include in the wrapper due to the fact that the search endpoint can already do that. The only thing left to do is to improve the quality of the code, implement GIF downloading which, according to how they are distributed across nhentai image repositories, will be quite troublesome and writing the documentation. 
+
 ### Current capabilities: 
 
 - nhentai.net API endpoints data requesting 
