@@ -30,7 +30,7 @@ from kitsune import Kitsune
 
 async def main():
     async with Kitsune() as client: 
-    ...
+        ...
     
 ```
 
@@ -44,8 +44,27 @@ from kitsune import Kitsune
 async def main():
     session = aiohttp.ClientSession()
     async with Kitsune.from_session(session) as client: 
-    ...
+        ...
+   
+```
 
+Now that you have your instance of the wrapper, using it is fairly simple. Some examples below.
+
+```py
+import aiohttp
+
+from kitsune import Kitsune, Tag, Artist
+
+async def main():
+    session = aiohttp.ClientSession()
+    async with Kitsune.from_session(session) as client: 
+        
+        gallery = await client.fetch_gallery(312781) # Fetching a gallery/doujinshi
+        
+        shelf = await client.search([Tag["futanari"], Tag["kitsune"], pages = [1, 10], popularity = Popularity.ALL_TIME) # Searching based on query or filter
+        
+        comments = await client.fetch_comments(gallery.id) # Fetching the comments from a doujin
+   
 ```
 
 Special thanks to hentai-chan for sharing the API endpoints. They were necessary for this async version of the wrapper to work.
