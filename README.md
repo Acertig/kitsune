@@ -29,26 +29,23 @@ import asyncio
 from kitsune import Kitsune
 
 async def main():
-  async with Kitsune() as client: 
+    async with Kitsune() as client: 
     ...
-
-asyncio.run(main())
+    
 ```
 
 You can also opt to pass your own HTTP session.
 
 ```py
-import asyncio
 import aiohttp
 
 from kitsune import Kitsune
 
 async def main():
-  session = aiohttp.ClientSession()
-  async with Kitsune.from_session(session) as client: 
+    session = aiohttp.ClientSession()
+    async with Kitsune.from_session(session) as client: 
     ...
 
-asyncio.run(main())
 ```
 
 Special thanks to hentai-chan for sharing the API endpoints. They were necessary for this async version of the wrapper to work.
