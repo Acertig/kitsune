@@ -64,7 +64,7 @@ Now that you have your instance of the wrapper, using it is fairly simple. Some 
 ```py
 import aiohttp
 
-from kitsune import Kitsune, Tag, Artist, Character, Parody, Group 
+from kitsune import Kitsune, Popularity, Tag, Artist, Character, Parody, Group 
 
 async def main():
     async with Kitsune(loop = your_loop) as client: # You can also pass your own loop, which will handle the ratelimits  
