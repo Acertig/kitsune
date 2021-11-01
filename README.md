@@ -71,13 +71,13 @@ async def main():
         
         gallery = await client.fetch_gallery(312781) # Fetching a gallery/doujinshi
         
-        galleries = await client.fetch_galleries([312781, 31286, 9294])
+        galleries = await client.fetch_galleries([312781, 31286, 9294]) # Multiple
         
-        related = await client.fetch_related(312781)
+        related = await client.fetch_related(312781) # Related
         
-        random_gallery = await client.fetch_random()
+        random_gallery = await client.fetch_random() # Random
         
-        homepage = await client.fetch_homepage()
+        homepage = await client.fetch_homepage() # Homepage
         
         shelf = await client.search([Tag["futanari"], Tag["kitsune"], pages = [1, 10], popularity = Popularity.ALL_TIME) # Searching based on query or filter
         
