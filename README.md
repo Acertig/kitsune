@@ -19,7 +19,11 @@ Only contributions I allow will be accepted. This will be worked on only in my f
 - Even more refactoring. 
 - Tweaks and changes for the http handler.
 
-## How-to-use Guide
+## Installation
+
+To be done lol
+
+## How-to-use guide
 
 The main way to instantiate the wrapper class is via an async context manager which takes care of creating and closing the HTTP session internally.
 
