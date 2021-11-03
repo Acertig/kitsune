@@ -1,9 +1,9 @@
 from collections.abc import Sequence
 from typing import List, Dict, Any, Union
 
-import re
 import asyncio
 import aiohttp
+import re
 
 from kitsune.constants import TBR
 from kitsune.routes import Route
