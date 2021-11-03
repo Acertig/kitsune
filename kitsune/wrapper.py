@@ -97,7 +97,7 @@ class Kitsune:
     async def fetch_gallery(self, __id: int) -> Gallery: 
 
         """
-        Async function. Fetches the data from the /api/gallery/ endpoint and wraps it into a Gallery instance.
+        Async function. Fetches the data from the /api/gallery/{id} endpoint and wraps it into a Gallery instance.
 
         Parameters 
         ----------
@@ -209,7 +209,7 @@ class Kitsune:
     async def search(self, query: Union[str, Sequence[str]], pages: Optional[Sequence[int]] = [1, 2], popularity: Optional[Popularity] = Popularity.RECENT) -> Union[Shelf, List[Shelf]]:
         
         """
-        Async function. Fetches the data from the /api/galleries/ endpoint and wraps it into a Shelf instance. 
+        Async function. Fetches the data from the /api/galleries/{params} endpoint and wraps it into a Shelf instance. 
 
         Parameters
         ----------
