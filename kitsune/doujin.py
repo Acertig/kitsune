@@ -93,7 +93,7 @@ class Gallery:
         return self.payload["num_pages"]
 
     def get_page(self, page: int) -> Page: 
-        return self.pages[page + 1]
+        return self.pages[page - 1]
 
 @dataclass(frozen = True)
 class HomePage: 
