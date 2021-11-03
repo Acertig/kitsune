@@ -1,5 +1,5 @@
 from collections.abc import Sequence
-from typing import List, Dict, Any, Union
+from typing import List, Dict, Any, Union, Optional
 
 import asyncio
 import aiohttp
@@ -13,7 +13,7 @@ class HTTPHandler:
 
     __slots__ = ("loop", "lock", "session",)
    
-    def __init__(self, loop: asyncio.AbstractEventLoop = None, session: aiohttp.ClientSession = None):                                                                                                                                                                                                                                              
+    def __init__(self, loop: Optional[asyncio.AbstractEventLoop] = None, session: Optional[aiohttp.ClientSession] = None):                                                                                                                                                                                                                                              
         self.loop = loop or asyncio.get_running_loop()
         self.session = session 
 
