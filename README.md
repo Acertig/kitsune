@@ -79,7 +79,7 @@ async def main():
         
         homepage = await client.fetch_homepage() # Homepage
         
-        shelf = await client.search([Tag["futanari"], Tag["kitsune"], popularity = Popularity.ALL_TIME) # Searching based on query or filter
+        shelf = await client.search([Tag["futanari"], Tag["kitsune"], popularity = Popularity.ALL_TIME) # Query/filter search
         
         comments = await client.fetch_comments(gallery.id) # Fetching the comments from a doujin
    
