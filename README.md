@@ -26,6 +26,8 @@ Only contributions I allow will be accepted. This will be worked on only in my f
 
 ## Installation
 
+Python 3.8+
+
 ```
 pip install kitsune-nh
 ```
