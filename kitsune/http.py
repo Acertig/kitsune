@@ -32,7 +32,6 @@ class HTTPHandler:
     @ratelimit
     async def get(self, route: Route, **params) -> Union[Dict[str, Any], str, bytes, None]: 
         async with self.session.get(route.url, params = params) as response: 
-            print(response.url)
             if 200 <= response.status < 300:    
                 content_type = response.headers["Content-Type"]
                 if content_type == "application/json": 
