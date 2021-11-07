@@ -26,7 +26,9 @@ Only contributions I allow will be accepted. This will be worked on only in my f
 
 ## Installation
 
-To be done lol
+```
+pip install kitsune-nh
+```
 
 ## How-to-use guide
 
