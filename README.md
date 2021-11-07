@@ -71,23 +71,28 @@ import aiohttp
 from kitsune import Kitsune, Popularity, Tag, Artist, Character, Parody, Group 
 
 async def main():
-    async with Kitsune(loop = your_loop) as client: # You can also pass your own loop, which will handle the ratelimits  
+    async with Kitsune(loop = your_loop) as client: # Passing your own loop 
+    
+    	# Wrapper methods
         
-        gallery = await client.fetch_gallery(312781) # Fetching a gallery/doujinshi
+        gallery = await client.fetch_gallery(312781)
         
-        galleries = await client.fetch_galleries([312781, 31286, 9294]) # Multiple
+        galleries = await client.fetch_galleries([312781, 31286, 9294])
         
-        related = await client.fetch_related(312781) # Related
+        related = await client.fetch_related(312781)
         
-        random_gallery = await client.fetch_random() # Random
+        random_gallery = await client.fetch_random()
         
-        homepage = await client.fetch_homepage() # Homepage
+        comments = await client.fetch_comments(gallery.id)
         
-        shelf = await client.search([Tag["futanari"], Tag["kitsune"], popularity = Popularity.ALL_TIME) # Query/filter search
+        homepage = await client.fetch_homepage()
         
-        comments = await client.fetch_comments(gallery.id) # Fetching the comments from a doujin
-   
+        shelf = await client.search(Tag["kitsune"], popularity = Popularity.ALL_TIME)
+        
+        await client.download(shelf, "/home/acertig/Pictures")
+     
 ```
 More examples and explanations can be found on the documentation. 
 
-Special thanks to hentai-chan for sharing the API endpoints. They were necessary for this async version of the wrapper to work.
+Special thanks to hentai-chan for sharing the API endpoints. They were necessary for this async version of the wrapper to work. 
+You can check his own sync wrapper here: https://github.com/hentai-chan/hentai
