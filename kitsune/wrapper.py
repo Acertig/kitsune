@@ -3,7 +3,6 @@ from typing import Optional, Union, Dict, List
 from contextlib import asynccontextmanager
 from concurrent.futures import ThreadPoolExecutor
 from random import randint
-from typing_extensions import get_args
 from PIL import Image, UnidentifiedImageError
 
 import asyncio
@@ -97,7 +96,7 @@ class Kitsune:
     async def fetch_gallery(self, __id: int) -> Gallery: 
 
         """
-        Async function. Fetches the data from the /api/gallery/{id} endpoint and wraps it into a Gallery instance.
+        Async function. Fetches the data from the /api/gallery/ endpoint and wraps it into a Gallery instance.
 
         Parameters 
         ----------
@@ -209,7 +208,7 @@ class Kitsune:
     async def search(self, query: Union[str, Sequence[str]], pages: Optional[Sequence[int]] = [1, 2], popularity: Optional[Popularity] = Popularity.RECENT) -> Union[Shelf, List[Shelf]]:
         
         """
-        Async function. Fetches the data from the /api/galleries/{params} endpoint and wraps it into a Shelf instance. 
+        Async function. Fetches the data from the /api/galleries/ endpoint and wraps it into a Shelf instance. 
 
         Parameters
         ----------
@@ -241,7 +240,7 @@ class Kitsune:
 
         return shelves if len(shelves) != 1 else shelves[0]
 
-    async def download(self, container: Union[Gallery, Sequence[Gallery], Shelf], path: str, directory: Optional[bool] = True): 
+    async def download(self, container: Union[Gallery, Sequence[Gallery], Shelf], path: str, directory: Optional[bool] = True, loading_bar: Optional[bool] = False): 
         
         """
         Async function. Fetches the bytes from the containers' media, and downloads it via threads in the path given and creates a directory if specified. 
@@ -258,7 +257,7 @@ class Kitsune:
 
         galleries = [*container]
         
-        bytes_l = [await self.http.fetch_media_bytes(list(map(lambda g: get_args.url, [gallery.cover, *gallery.pages]))) for gallery in galleries]
+        bytes_l = [await self.http.fetch_media_bytes(list(map(lambda g: g.url, [gallery.cover, *gallery.pages]))) for gallery in galleries]
         media = list(zip(galleries, bytes_l))
 
         with ThreadPoolExecutor() as executor: 
@@ -267,11 +266,14 @@ class Kitsune:
                     temp = f"{path}/{gallery.id}"
                     try: 
                         os.mkdir(temp)
-                    except FileExistsError: 
-                        pass
+                    except FileExistsError as e: 
+                        print(e)
                 else: 
                     temp = path
 
                 executor.submit(self.save_bytes_to_file(bytes_l, temp, gallery))
+
+    
+
 
    
