@@ -47,6 +47,8 @@ You can also opt to pass your own HTTP session.
 ```py
 from kitsune import Kitsune
 
+import aiohttp
+
 async def main():
 
     session = aiohttp.ClientSession()
