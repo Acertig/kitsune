@@ -34,8 +34,6 @@ Dependencies: aiohttp v3.8.0, Pillow v8.4.0
 The main way to instantiate the wrapper class is via an async context manager which takes care of creating and closing the HTTP session internally.
 
 ```py
-import asyncio
-
 from kitsune import Kitsune
 
 async def main():
@@ -47,8 +45,6 @@ async def main():
 You can also opt to pass your own HTTP session.
 
 ```py
-import aiohttp
-
 from kitsune import Kitsune
 
 async def main():
@@ -62,8 +58,6 @@ async def main():
 And for those who want to keep the client instance static, you can use it like this: 
 
 ```py
-import asyncio
-
 from kitsune import Kitsune
 
 async def main():
@@ -77,8 +71,6 @@ async def main():
 Now that you have your instance of the wrapper, using it is fairly simple. Some examples below.
 
 ```py
-import aiohttp
-
 from kitsune import Kitsune, Popularity, Tag, Artist, Character, Parody, Group 
 
 async def main():
