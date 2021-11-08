@@ -58,17 +58,7 @@ async def main():
    
 ```
 And for those who want to keep the client instance static, you can use it like this: 
-
-```py
-from kitsune import Kitsune
-
-async def main():
-    client = Kitsune()
-    ...
-    # Approaching your program's end
-    await client.__aexit__()
-    
-```
+Not yet implemented lol
 
 Now that you have your instance of the wrapper, using it is fairly simple. Some examples below.
 
