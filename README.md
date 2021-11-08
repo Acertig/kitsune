@@ -89,6 +89,20 @@ async def main():
         await client.download(shelf, "/home/acertig/Pictures")
      
 ```
+Also for those who want to keep the client instance static, you can use it like this: 
+
+```py
+import asyncio
+
+from kitsune import Kitsune
+
+async def main():
+    client = Kitsune()
+    ...
+    # Approaching your program's end
+    await client.__aexit__()
+    
+```
 More examples and explanations can be found on the documentation. 
 
 Special thanks to hentai-chan for sharing the API endpoints. They were necessary for this async version of the wrapper to work. 
