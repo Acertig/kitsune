@@ -27,6 +27,7 @@ Python 3.8+
 ```
 pip install kitsune-nh
 ```
+Dependencies: aiohttp v3.8.0, Pillow v8.4.0
 
 ## How-to-use guide
 
