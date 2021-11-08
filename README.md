@@ -14,12 +14,8 @@ Only contributions I allow will be accepted. This will be worked on only in my f
 - Ratelimit handling
 - Downloading done via threads
 
-### Pre-release: 
-
-- Extra polishing, some extra refactoring and last touches.
-- Licensing, uploading the package and guide on how to use.
-
 ### Post-release: 
+- Documenting all class models
 - GIF downloading support.
 - Even more refactoring. 
 - Tweaks and changes for the http handler.
