@@ -63,7 +63,7 @@ class Kitsune:
                 img = Image.open(io.BytesIO(__bytes))
                 img.save(f"{path}/{i if i != 0 else 'cover'}.{gallery.pages[i-1].extension if i != 0 else gallery.cover.extension}")
             except UnidentifiedImageError: 
-                self.print(f"Page {i} from {gallery.title.pretty} couldn't be downloaded.")
+                pass
 
     @classmethod
     @asynccontextmanager
