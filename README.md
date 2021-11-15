@@ -17,8 +17,9 @@ Only contributions I allow will be accepted. This will be worked on only in my f
 ### Post-release: 
 - Documenting all class models
 - GIF downloading support
-- Even more refactoring
 - Tweaks and changes for the http handler
+- Logging
+- Even more refactoring
 
 ## Installation
 
