@@ -19,7 +19,7 @@ Only contributions I allow will be accepted. This will be worked on only in my f
 - GIF downloading support
 - Tweaks and changes for the http handler
 - Logging
-- Even more refactoring
+- Even more refactoring and annotation changes
 
 ## Installation
 
