@@ -89,7 +89,7 @@ async def main():
      
 ```
 
-More examples and explanations can be found on the documentation. 
+More examples and explanations can be found on the yet to come (lol) documentation. 
 
 Special thanks to hentai-chan for sharing the API endpoints. They were necessary for this async version of the wrapper to work. 
 You can check his own sync wrapper here: https://github.com/hentai-chan/hentai
