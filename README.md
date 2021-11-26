@@ -14,13 +14,15 @@ Only contributions I allow will be accepted. This will be worked on only in my f
 - Ratelimit handling
 - Downloading done via threads
 
-### Post-release: 
+### Post-release:
+- Polishing the README.md
 - Documenting all class models
 - Fix the async mess
 - GIF downloading support
 - Pathlib support
 - Tweaks and changes for the http handler
 - Logging
+- CLI probably
 - Even more refactoring and annotation changes
 
 ## Installation
