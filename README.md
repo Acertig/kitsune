@@ -6,6 +6,8 @@ As of now the wrapper has most of the functionality the API has to offer, except
 
 Only contributions I allow will be accepted. This will be worked on only in my free time. 
 
+On hiatus because I got fed up with thinking how to cleanly wrap the API, will release the last version with paginators and leave it be for a while. ****
+
 ### Current capabilities: 
 
 - nhentai.net API endpoints data requesting 
@@ -93,5 +95,3 @@ async def main():
 ```
 
 More examples and explanations can be found on the yet to come (lol) documentation. 
-
-On hiatus because I got fed up with thinking how to cleanly wrap the API, will release the last version with paginators and leave it be for a while. 
