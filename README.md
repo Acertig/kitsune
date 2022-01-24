@@ -93,3 +93,5 @@ async def main():
 ```
 
 More examples and explanations can be found on the yet to come (lol) documentation. 
+
+On hiatus because I got fed up with thinking how to cleanly wrap the API. 
